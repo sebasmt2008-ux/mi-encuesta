@@ -241,14 +241,18 @@
     </div>
 
     <!-- Éxito -->
-    <div class="success-msg" id="success-section">
-      <div class="icon">🎉</div>
-      <h2>¡Gracias por votar!</h2>
-      <p>Tu respuesta fue registrada correctamente.</p>
-      <div>
-        <button class="btn-again" onclick="otroVoto()">Votar de nuevo</button>
-      
-      </div>
+<div class="success-msg" id="success-section" style="display:none;">
+    <div class="icon">🎉</div>
+    <h2>¡Gracias por votar!</h2>
+    <p>Tu respuesta fue registrada correctamente.</p>
+    
+    <hr>
+    <h3>Resultados en tiempo real:</h3>
+    <div id="lista-resultados" style="text-align: left; margin: 20px 0;">
+        </div>
+    
+    <button class="btn-again" onclick="otroVoto()">Votar de nuevo</button>
+</div>
     </div>
   </div>
 </div>
@@ -302,6 +306,17 @@
     document.getElementById('form-section').style.display = 'block';
     document.getElementById('success-section').style.display = 'none';
   };
+  const votosRef = ref(db, 'votos');
+onValue(votosRef, (snapshot) => {
+    const data = snapshot.val();
+    const listaDiv = document.getElementById('lista-resultados');
+    if (data) {
+        listaDiv.innerHTML = ""; 
+        Object.keys(data).forEach(bebida => {
+            listaDiv.innerHTML += `<p><strong>${bebida}:</strong> ${data[bebida]} votos</p>`;
+        });
+    }
+});
 </script>
 </body>
 </html>
