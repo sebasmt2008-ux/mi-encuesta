@@ -253,31 +253,55 @@
   </div>
 </div>
 
-<script>
-  function getDatos() {
-    try { return JSON.parse(localStorage.getItem('encuesta_bebidas')) || {'Coca Cola':0,'Agua':0,'Café':0,'Ninguna':0}; }
-    catch { return {'Coca Cola':0,'Agua':0,'Café':0,'Ninguna':0}; }
-  }
-  function guardarDatos(d) { localStorage.setItem('encuesta_bebidas', JSON.stringify(d)); }
+<script type="module">
+  // 1. Importaciones de Firebase
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getDatabase, ref, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-  function enviar() {
+  // 2. Tus credenciales (las que sacaste de la imagen)
+  const firebaseConfig = {
+    apiKey: "AIzaSyC18BSvHNd7hL9AqSShWgauSwr72cL8qxY",
+    authDomain: "encuesta-realtime.firebaseapp.com",
+    databaseURL: "https://encuesta-realtime-default-rtdb.firebaseio.com", 
+    projectId: "encuesta-realtime",
+    storageBucket: "encuesta-realtime.firebasestorage.app",
+    messagingSenderId: "971944797546",
+    appId: "1:971944797546:web:90413ed2d496036818f113",
+    measurementId: "G-7BT0MK26EM"
+  };
+
+  // 3. Inicialización
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  // 4. La nueva función enviar (ahora usa window.enviar para que el botón la encuentre)
+  window.enviar = function() {
     const nombre = document.getElementById('nombre').value.trim();
     const bebida = document.querySelector('input[name="bebida"]:checked');
+    
     if (!nombre) { alert('Por favor ingresa tu nombre.'); return; }
     if (!bebida) { alert('Por favor selecciona una bebida.'); return; }
-    const datos = getDatos();
-    datos[bebida.value] = (datos[bebida.value] || 0) + 1;
-    guardarDatos(datos);
-    document.getElementById('form-section').style.display = 'none';
-    document.getElementById('success-section').style.display = 'block';
-  }
 
-  function otroVoto() {
+    const bebidaRef = ref(db, 'votos/' + bebida.value);
+
+    runTransaction(bebidaRef, (currentCount) => {
+      return (currentCount || 0) + 1;
+    }).then(() => {
+      document.getElementById('form-section').style.display = 'none';
+      document.getElementById('success-section').style.display = 'block';
+    }).catch((error) => {
+      console.error(error);
+      alert("Error. Revisa que la base de datos esté en 'Modo de prueba'.");
+    });
+  };
+
+  // 5. Función para votar de nuevo
+  window.otroVoto = function() {
     document.getElementById('nombre').value = '';
     document.querySelectorAll('input[name="bebida"]').forEach(r => r.checked = false);
     document.getElementById('form-section').style.display = 'block';
     document.getElementById('success-section').style.display = 'none';
-  }
+  };
 </script>
 </body>
 </html>
