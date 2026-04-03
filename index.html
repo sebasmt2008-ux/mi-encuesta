@@ -246,14 +246,6 @@
     <h2>¡Gracias por votar!</h2>
     <p>Tu respuesta fue registrada correctamente.</p>
     
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<h3>Resultados en tiempo real:</h3>
-<div id="lista-resultados" style="text-align: left; margin: 10px 0;"></div>
-
-<div style="max-width: 280px; margin: 15px auto;">
-    <canvas id="graficoVotos"></canvas>
-</div>
     
     <button class="btn-again" onclick="otroVoto()">Votar de nuevo</button>
 </div>
@@ -310,42 +302,7 @@
     document.getElementById('form-section').style.display = 'block';
     document.getElementById('success-section').style.display = 'none';
   };
-  let miGrafico; 
-const votosRef = ref(db, 'votos');
 
-onValue(votosRef, (snapshot) => {
-    const data = snapshot.val();
-    if (data) {
-        const etiquetas = Object.keys(data); 
-        const valores = Object.values(data);
-
-        const listaDiv = document.getElementById('lista-resultados');
-        listaDiv.innerHTML = "";
-        etiquetas.forEach(bebida => {
-            listaDiv.innerHTML += `<p><strong>${bebida}:</strong> ${data[bebida]} votos</p>`;
-        });
-
-        const ctx = document.getElementById('graficoVotos').getContext('2d');
-        if (miGrafico) { miGrafico.destroy(); } 
-
-        miGrafico = new Chart(ctx, {
-            type: 'pie',
-            data: {
-                labels: etiquetas,
-                datasets: [{
-                    data: valores,
-                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'],
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { position: 'bottom' }
-                }
-            }
-        });
-    }
-});
 </script>
 </body>
 </html>
